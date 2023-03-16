@@ -33,8 +33,6 @@ class Trainer:
         This method instantiate the Trainer class
         :param model: tf.keras.applications model to be trainedpcm_speeches
         """
-        self.m_name =model_name
-        self.model = model
     def finetune(self, d_input_dir = config.filepaths['base_path'],d_output =  None, n_augmentations=1,\
         batch_size = config.learningparams['ft_batch_size'], epochs = config.learningparams['num_epochs'], save=False) -> None: 
         """"
@@ -74,7 +72,7 @@ class Trainer:
         val_file_path = Path(d_input_dir, 'Val.h5')
         test_file_path = Path(d_input_dir, 'Test.h5')
         if not train_file_path.is_file():
-            pp.build_ds(ds_bld.augmentations[0], keepdims=True,augment = True,random_augmentation=True,n_augmented_samples = 6, crop_dims= (128,128),outpath=train_file_path)
+            pp.build_ds(ds_bld.augmentations[0], keepdims=True,augment = True,random_augmentation=True,n_augmented_samples = 2, crop_dims= (128,128),outpath=train_file_path)
 
         train_dl =  DataLoader(datapath= train_file_path)
         train_dl.load()
@@ -127,6 +125,7 @@ class Trainer:
                 pre_train_dl.load()
             logging.info(pre_train_dl.X.shape)
             
+            # We are training the baseline model
             # We are creating a baseline w/o pre-training on the upstream dataset
             scrl = SCRL(train_dl.input_shape,len(train_dl.CLASSES), model=self.model)
             encoder = scrl.create_encoder()
@@ -137,10 +136,10 @@ class Trainer:
             print(f"Test accuracy before : {round(top_1_accuracy * 100, 2)}%, Top 3 accuracy {round(top_3_accuracy * 100, 2)}%")
             results[f'{self.m_name}_{metrics[0]}'].append(top_1_accuracy)
             results[f'{self.m_name}_{metrics[1]}'].append(top_3_accuracy)
-            pretrain_file_paths_names = config.filepaths['pretrain_file_paths_names'][i]
+            
             if save:
-                classifier.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_file_paths_names}/{self.m_name}_Baseline_Classifier_Chimp_test')}")
-                logging.info(f"Classifier saved to {Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_file_paths_names}/{self.m_name}_{type}_encoder_test')} successfully")
+                classifier.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_paths[i].name}/{self.m_name}_Baseline_Classifier_Chimp_test')}")
+                logging.info(f"Classifier saved to {Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_paths[i].name}/{self.m_name}_{type}_encoder_test')} successfully")
             
         
 
@@ -159,8 +158,8 @@ class Trainer:
             results[f'{self.m_name}_{metrics[4]}'].append(top_1_accuracy)
             results[f'{self.m_name}_{metrics[5]}'].append(top_3_accuracy)
             if save:
-                classifier.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_file_paths_names}/InfoNCE_Classifier')}")
-                infoNCE_encoder_with_projection_head.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_file_paths_names}/{self.m_name}_InfoNCE_encoder')}")
+                classifier.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_paths[i].name}/InfoNCE_Classifier')}")
+                infoNCE_encoder_with_projection_head.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_paths[i].name}/{self.m_name}_InfoNCE_encoder')}")
 
 
         
@@ -179,8 +178,8 @@ class Trainer:
             results[f'{self.m_name}_{metrics[2]}'].append(top_1_accuracy)
             results[f'{self.m_name}_{metrics[3]}'].append(top_3_accuracy)
             if save:
-                classifier.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_file_paths_names}/Tripplet_loss_Classifier')}")
-                TrippletLoss_encoder_with_projection_head.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_file_paths_names}/{self.m_name}_Tripplet_loss_encoder')}")
+                classifier.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_paths[i].name}/Tripplet_loss_Classifier')}")
+                TrippletLoss_encoder_with_projection_head.save(f"{Path(config.filepaths['model_path'], f'Pretrain_Size/{pretrain_paths[i].name}/{self.m_name}_Tripplet_loss_encoder')}")
             
             results['size'].append(i)
             ts = time.time()

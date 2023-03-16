@@ -28,3 +28,12 @@ qsub -N voxceleb1 -v CUDA_VISIBLE_DEVICES=0 -v PATH -b y -cwd -l cuda=0,mem=8G p
 
 
 
+qsub -N LibriSpeech500 -v CUDA_VISIBLE_DEVICES=0 -v PATH -b y -cwd -l cuda=0,mem=64G python3 train.py build --input_dir  /net/projects/scratch/winter/valid_until_31_July_2023/ybrima/data/learning/LibriSpeech500/train --output train --n 2
+
+qsub -N PretrainSizeEffect -v CUDA_VISIBLE_DEVICES=0 -v PATH -b y -cwd -l cuda=1,mem=64G  python3 pretrainsize.py --d_input_dir /net/projects/scratch/winter/valid_until_31_July_2023/ybrima/data/learning/PrototypeDS  --d_output Prototype --pbs 265 --npt 2 --nds 2 --dbs 64 --epochs 100 --ft 1
+
+
+CUDA_VISIBLE_DEVICES=0 python3 pretrainsize.py --d_input_dir /net/projects/scratch/winter/valid_until_31_July_2023/ybrima/data/learning/PrototypeDS  --d_output Prototype --pbs 265 --npt 2 --nds 2 --dbs 64 --epochs 100 --ft 1
+
+
+CUDA_VISIBLE_DEVICES=0 python3 train.py train --p_input_dir /net/projects/scratch/winter/valid_until_31_July_2023/ybrima/data/learning/LibriSpeech360/train --p_output  train  --d_input_dir /net/projects/scratch/winter/valid_until_31_July_2023/ybrima/data/learning/PrototypeDS --d_output Prototype --pbs 265 --dbs 32 --epochs 100 --ft 1 --npt 2 --nds 11

@@ -27,6 +27,7 @@ filepaths = dict(
     voxceleb  = Path(f"{base_path}/VoxCeleb"),
     librispeech = Path(f"{base_path}/LibriSpeech500/"),
     Public_Speeches = Path(f"{base_path}/Public_Speeches/"),
+    pretrain_file_paths_names =  ["LibriSpeech100","LibriSpeech360","LibriSpeech500","LibriSpeech960","VoxCeleb","vox2_dev_aac"],
     pretrain_file_paths =  [Path(f'{base_path}/LibriSpeech100/train'),Path(f'{base_path}/LibriSpeech360/train'),Path(f'{base_path}/LibriSpeech500/train'),Path(f'{base_path}/LibriSpeech960/train'), Path(f"{base_path}/VoxCeleb/VoxCeleb"),Path(f"{base_path}/VoxCeleb/vox2_dev_aac")]
 )
 
